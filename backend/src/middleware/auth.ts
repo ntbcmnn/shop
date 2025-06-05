@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {findUserByToken} from "../model/User";
+import {findUserByToken} from "../models/User";
 
 
 export interface RequestWithUser extends Request {

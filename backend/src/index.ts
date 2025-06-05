@@ -3,6 +3,7 @@ import cors from 'cors';
 import mysql from 'mysql2/promise';
 import userRouter from "./routes/users";
 import dotenv from "dotenv";
+import productRouter from './routes/products';
 
 const app = express();
 dotenv.config();
@@ -15,14 +16,15 @@ app.use(express.static("public"));
 
 
 app.use('/user', userRouter);
+app.use('/products', productRouter);
 
 const run = async () => {
     try {
         const connection = await mysql.createConnection({
             host: 'localhost',
-            port:  3307,
+            port: 3307,
             user: 'root',
-            password:  'root_password',
+            password: 'root_password',
             database: 'shop_db',
             waitForConnections: true,
             connectionLimit: 10,

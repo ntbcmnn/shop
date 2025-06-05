@@ -6,7 +6,7 @@ import {
     createUser,
     findUserByEmail,
     generateNewToken,
-} from "../model/User";
+} from "../models/User";
 
 const userRouter = Router();
 
