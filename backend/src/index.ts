@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise';
 import userRouter from "./routes/users";
 import dotenv from "dotenv";
 import productRouter from './routes/products';
+import categoryRouter from "./routes/categories";
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.static("public"));
 
 app.use('/user', userRouter);
 app.use('/products', productRouter);
+app.use('/category', categoryRouter);
 
 const run = async () => {
     try {

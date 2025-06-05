@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import * as Product from '../models/Product';
+import auth from "../middleware/auth";
+import permit from "../middleware/permit";
 
 const router = Router();
 
@@ -25,6 +27,8 @@ router.get('/:id', async (req, res, next) => {
 
 router.post(
     '/',
+    auth,
+    permit("ADMIN"),
     Product.upload.single('image'),
     async (req, res, next) => {
         try {
@@ -50,6 +54,8 @@ router.post(
 
 router.put(
     '/:id',
+    auth,
+    permit("ADMIN"),
     Product.upload.single('image'),
     async (req, res, next) => {
         try {
@@ -66,7 +72,7 @@ router.put(
     },
 );
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', auth, permit("ADMIN"),async (req, res, next) => {
     try {
         const ok = await Product.remove(Number(req.params.id));
         if (!ok) res.status(404).json({message: 'Not found'});
