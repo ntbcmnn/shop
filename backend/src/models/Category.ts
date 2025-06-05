@@ -1,9 +1,8 @@
 import mysql from "mysql2/promise";
 import type { RowDataPacket } from "mysql2";
-import path from "path";
-import * as fs from "node:fs";
-import multer from "multer";
+import {createUploader} from '../multer';
 
+export const upload = createUploader('categories');
 export const pool = mysql.createPool({
     host: "localhost",
     port: 3307,
@@ -22,22 +21,6 @@ export interface Category {
 }
 
 export interface NewCategoryInput extends Omit<Category, "id"> {}
-
-const uploadDir = path.join(process.cwd(), "public", "uploads", "categories");
-fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => {
-        const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
-    },
-});
-
-export const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-});
 
 export async function getAll(): Promise<Category[]> {
     const [rows] = await pool.query<(RowDataPacket & Category)[]>(

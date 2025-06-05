@@ -1,8 +1,8 @@
 import mysql from "mysql2/promise";
 import type {RowDataPacket} from 'mysql2';
-import path from 'path';
-import * as fs from 'node:fs';
-import multer from 'multer';
+import {createUploader} from '../multer';
+
+export const upload = createUploader('products');
 
 export const pool = mysql.createPool({
     host: "localhost",
@@ -27,22 +27,6 @@ export interface Product {
 export interface NewProductInput
     extends Omit<Product, "id"> {
 }
-
-const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-fs.mkdirSync(uploadDir, {recursive: true});
-
-const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => {
-        const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
-    },
-});
-
-export const upload = multer({
-    storage,
-    limits: {fileSize: 5 * 1024 * 1024},
-});
 
 export async function getAll(): Promise<Product[]> {
     const [rows] = await pool.query<(RowDataPacket & Product)[]>(
