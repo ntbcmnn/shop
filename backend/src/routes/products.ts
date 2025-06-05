@@ -75,11 +75,11 @@ productsRouter.put(
     },
 );
 
-productsRouter.delete('/:id', auth, permit("ADMIN"),async (req, res, next) => {
+productsRouter.delete('/:id', auth, permit("ADMIN"), async (req, res, next) => {
     try {
         const ok = await Product.remove(Number(req.params.id));
         if (!ok) res.status(404).json({message: 'Not found'});
-        res.status(204).end();
+        res.status(204).json({message: 'Product deleted successfully'});
         return;
     } catch (e) {
         next(e);
