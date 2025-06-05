@@ -1,35 +1,45 @@
 'use client';
-
 import { useState } from 'react';
+import {userThunk} from "@/stores/users/usersThunk";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
-    const [error, setError] = useState('');
-    const [submitted, setSubmitted] = useState(false);
+    const [password, setPassword] = useState('');
+    const router = useRouter();
 
     const phonePattern = /^\+996-\d{3}-\d{2}-\d{2}-\d{2}$/;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+    const register = userThunk((state) => state.register);
+    const loading = userThunk((state) => state.loading);
+    const error = userThunk((state) => state.error);
+
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!email || !firstName || !lastName || !phone) {
-            setError('Пожалуйста, заполните все поля');
+        if (!email || !firstName || !lastName  || !password) {
+            alert('Пожалуйста, заполните все поля');
             return;
         }
 
-        if (!phonePattern.test(phone)) {
-            setError('Введите номер телефона в формате +996-XXX-XX-XX');
+        if (phone && !phonePattern.test(phone)) {
+            alert('Введите номер телефона в формате +996-XXX-XX-XX');
             return;
         }
 
-        setError('');
-        setSubmitted(true);
-
-        // Здесь можно отправить данные на сервер
-        console.log('Регистрация:', { email, firstName, lastName, phone });
+        try {
+            await register({ email, password, first_name: firstName, last_name: lastName, phone });
+            setSubmitted(true);
+            router.push('/');
+        } catch  {
+            setSubmitted(false);
+        }
     };
 
     return (
@@ -89,6 +99,19 @@ export default function Register() {
                         className="w-full px-4 py-2 border border-black rounded focus:outline-none focus:ring-2 focus:ring-black"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="password" className="block mb-1 font-medium">
+                        Пароль
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        className="w-full px-4 py-2 border border-black rounded focus:outline-none focus:ring-2 focus:ring-black"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
@@ -100,9 +123,10 @@ export default function Register() {
 
                 <button
                     type="submit"
-                    className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition"
+                    className={`w-full py-2 px-4 rounded text-white ${loading ? 'bg-gray-500' : 'bg-black hover:bg-gray-800'} transition`}
+                    disabled={loading}
                 >
-                    Зарегистрироваться
+                    {loading ? 'Регистрация...' : 'Зарегистрироваться'}
                 </button>
             </form>
         </div>

@@ -1,11 +1,15 @@
-'use client';
-
+"use client";
 import Link from 'next/link';
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {userThunk} from "@/stores/users/usersThunk";
+
 
 export default function Header() {
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const { user, logout } = userThunk();
+    const router = useRouter();
 
     const mockCart = [
         { id: 1, title: 'Платье летнее', price: 2499 },
@@ -13,6 +17,11 @@ export default function Header() {
     ];
 
     const toggleCart = () => setIsCartOpen(!isCartOpen);
+
+    const handleLogout = () => {
+        logout();
+        router.push('/');
+    };
 
     return (
         <header className="bg-white text-black border-b border-gray-200 shadow-sm relative">
@@ -34,17 +43,30 @@ export default function Header() {
                 </nav>
 
                 <div className="flex items-center space-x-4 text-sm relative">
-                    <Link href="/login" className="hover:underline">
-                        Войти
-                    </Link>
-                    <Link
-                        href="/register"
-                        className="border border-black px-3 py-1 rounded hover:bg-black hover:text-white transition"
-                    >
-                        Зарегистрироваться
-                    </Link>
+                    {!user ? (
+                        <>
+                            <Link href="/login" className="hover:underline">
+                                Войти
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="border border-black px-3 py-1 rounded hover:bg-black hover:text-white transition"
+                            >
+                                Зарегистрироваться
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <span className="mr-4">Привет, {user.first_name}</span>
+                            <button
+                                onClick={handleLogout}
+                                className="border border-black px-3 py-1 rounded hover:bg-black hover:text-white transition"
+                            >
+                                Выйти
+                            </button>
+                        </>
+                    )}
 
-                    {/* Иконка корзины */}
                     <button
                         onClick={toggleCart}
                         className="relative p-2 hover:bg-gray-100 rounded-full transition"
@@ -52,12 +74,11 @@ export default function Header() {
                         <ShoppingCart size={20} />
                         {mockCart.length > 0 && (
                             <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-black rounded-full">
-                                {mockCart.length}
-                            </span>
+                {mockCart.length}
+              </span>
                         )}
                     </button>
 
-                    {/* Выпадашка */}
                     <div
                         className={`absolute right-0 top-full mt-2 w-72 bg-white border border-gray-300 shadow-lg rounded-lg z-50 transition-opacity duration-300 ease-in-out ${
                             isCartOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
