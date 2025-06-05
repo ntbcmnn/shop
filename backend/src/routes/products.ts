@@ -3,9 +3,9 @@ import * as Product from '../models/Product';
 import auth from "../middleware/auth";
 import permit from "../middleware/permit";
 
-const router = Router();
+const productsRouter = Router();
 
-router.get('/', async (_req, res, next) => {
+productsRouter.get('/', async (_req, res, next) => {
     try {
         const products = await Product.getAll();
         res.json(products);
@@ -14,7 +14,7 @@ router.get('/', async (_req, res, next) => {
     }
 });
 
-router.get('/:id', async (req, res, next) => {
+productsRouter.get('/:id', async (req, res, next) => {
     try {
         const product = await Product.getById(Number(req.params.id));
         if (!product) res.status(404).json({message: 'Not found'});
@@ -25,11 +25,11 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-router.post(
+productsRouter.post(
     '/',
     auth,
     permit("ADMIN"),
-    Product.upload.single('image'),
+    Product.upload.single('image_url'),
     async (req, res, next) => {
         try {
             const {name, description, price, subcategory_id} = req.body;
@@ -37,7 +37,7 @@ router.post(
                 ? `/uploads/${req.file.filename}`
                 : null;
 
-            const id = await Product.create({
+            const productId = await Product.create({
                 name,
                 description,
                 price: Number(price),
@@ -45,26 +45,29 @@ router.post(
                 image_url,
             });
 
-            res.status(201).json({id});
+            const product = await Product.getById(productId);
+
+            res.status(201).json({product});
         } catch (e) {
             next(e);
         }
     },
 );
 
-router.put(
+productsRouter.put(
     '/:id',
     auth,
     permit("ADMIN"),
-    Product.upload.single('image'),
+    Product.upload.single('image_url'),
     async (req, res, next) => {
         try {
             const updates: any = {...req.body};
-            if (req.file) updates.image_url = `/uploads/${req.file.filename}`;
+            if (req.file) updates.image_url = `/uploads/products/${req.file.filename}`;
 
             const ok = await Product.update(Number(req.params.id), updates);
             if (!ok) res.status(404).json({message: 'Not found'});
-            res.json({message: 'Updated'});
+            const updatedProduct = await Product.getById(Number(req.params.id));
+            res.json(updatedProduct);
             return;
         } catch (e) {
             next(e);
@@ -72,7 +75,7 @@ router.put(
     },
 );
 
-router.delete('/:id', auth, permit("ADMIN"),async (req, res, next) => {
+productsRouter.delete('/:id', auth, permit("ADMIN"),async (req, res, next) => {
     try {
         const ok = await Product.remove(Number(req.params.id));
         if (!ok) res.status(404).json({message: 'Not found'});
@@ -83,4 +86,4 @@ router.delete('/:id', auth, permit("ADMIN"),async (req, res, next) => {
     }
 });
 
-export default router;
+export default productsRouter;

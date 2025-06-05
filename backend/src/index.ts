@@ -5,6 +5,8 @@ import userRouter from "./routes/users";
 import dotenv from "dotenv";
 import productRouter from './routes/products';
 import categoryRouter from "./routes/categories";
+import subcategoriesRouter from './routes/subcategories';
+import productsRouter from './routes/products';
 
 const app = express();
 dotenv.config();
@@ -17,8 +19,9 @@ app.use(express.static("public"));
 
 
 app.use('/user', userRouter);
-app.use('/products', productRouter);
+app.use('/products', productsRouter);
 app.use('/category', categoryRouter);
+app.use('/subcategories', subcategoriesRouter);
 
 const run = async () => {
     try {

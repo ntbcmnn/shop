@@ -26,7 +26,6 @@ categoryRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-// 🛡️ Добавлять может только админ
 categoryRouter.post(
     "/",
     auth,
@@ -47,7 +46,6 @@ categoryRouter.post(
     }
 );
 
-// 🛡️ Редактировать может только админ
 categoryRouter.put(
     "/:id",
     auth,
@@ -69,7 +67,6 @@ categoryRouter.put(
     }
 );
 
-// 🛡️ Удалять может только админ
 categoryRouter.delete("/:id",auth, permit("ADMIN"), async (req, res, next) => {
     try {
         const ok = await Category.remove(Number(req.params.id));
