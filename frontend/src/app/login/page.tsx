@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { userThunk } from '@/stores/users/usersThunk';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {usersStore} from '@/stores/users/usersStore';
 
 
 export default function Login() {
@@ -10,9 +10,9 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
 
-    const login = userThunk((state) => state.login);
-    const loading = userThunk((state) => state.loading);
-    const error = userThunk((state) => state.error);
+    const login = usersStore((state) => state.login);
+    const loading = usersStore((state) => state.loading);
+    const error = usersStore((state) => state.error);
 
     const router = useRouter();
 
@@ -26,8 +26,13 @@ export default function Login() {
 
         try {
             await login(email, password);
-            setSubmitted(true);
-            router.push('/');
+            const { role } = usersStore.getState().user || {};
+
+            if (role === 'USER') {
+                router.push('/');
+            } else {
+                router.push('/admin');
+            }
         } catch {
             setSubmitted(false);
         }

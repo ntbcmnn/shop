@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
-import {userThunk} from "@/stores/users/usersThunk";
-import { useRouter } from "next/navigation";
+import {useState} from 'react';
+import {useRouter} from "next/navigation";
+import {usersStore} from '@/stores/users/usersStore';
 
 export default function Register() {
     const [email, setEmail] = useState('');
@@ -10,20 +10,19 @@ export default function Register() {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
-
     const phonePattern = /^\+996-\d{3}-\d{2}-\d{2}-\d{2}$/;
 
 
-    const register = userThunk((state) => state.register);
-    const loading = userThunk((state) => state.loading);
-    const error = userThunk((state) => state.error);
+    const register = usersStore((state) => state.register);
+    const loading = usersStore((state) => state.loading);
+    const error = usersStore((state) => state.error);
 
     const [submitted, setSubmitted] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!email || !firstName || !lastName  || !password) {
+        if (!email || !firstName || !lastName || !password) {
             alert('Пожалуйста, заполните все поля');
             return;
         }
@@ -34,10 +33,16 @@ export default function Register() {
         }
 
         try {
-            await register({ email, password, first_name: firstName, last_name: lastName, phone });
-            setSubmitted(true);
-            router.push('/');
-        } catch  {
+            await register({email, password, first_name: firstName, last_name: lastName, phone});
+            const {role} = usersStore.getState().user || {};
+
+            if (role === 'USER') {
+                router.push('/');
+            } else {
+                router.push('/admin');
+            }
+
+        } catch {
             setSubmitted(false);
         }
     };

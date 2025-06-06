@@ -1,7 +1,9 @@
-import { Router } from "express";
+import {Router} from "express";
 import * as Category from "../models/Category";
 import permit from "../middleware/permit";
 import auth from "../middleware/auth";
+import path from 'path';
+import fs from 'node:fs';
 
 
 const categoryRouter = Router();
@@ -18,7 +20,7 @@ categoryRouter.get("/", async (_req, res, next) => {
 categoryRouter.get("/:id", async (req, res, next) => {
     try {
         const category = await Category.getById(Number(req.params.id));
-        if (!category)  res.status(404).json({ message: "Not found" });
+        if (!category) res.status(404).json({message: "Not found"});
         res.json(category);
         return;
     } catch (e) {
@@ -33,13 +35,13 @@ categoryRouter.post(
     Category.upload.single("photo"),
     async (req, res, next) => {
         try {
-            const { name } = req.body;
+            const {name} = req.body;
             const photo = req.file
                 ? `/uploads/categories/${req.file.filename}`
                 : null;
 
-            const id = await Category.create({ name, photo });
-            res.status(201).json({ id, name, photo });
+            const id = await Category.create({name, photo});
+            res.status(201).json({id, name, photo});
         } catch (e) {
             next(e);
         }
@@ -47,30 +49,46 @@ categoryRouter.post(
 );
 
 categoryRouter.put(
-    "/:id",
+    '/:id',
     auth,
-    permit("ADMIN"),
-    Category.upload.single("photo"),
+    permit('ADMIN'),
+    Category.upload.single('photo'),
     async (req, res, next) => {
         try {
-            const updates: any = { name: req.body.name };
+            const id = Number(req.params.id);
+            const {name} = req.body;
+
+            const updates: Partial<Category.NewCategoryInput> = {};
+            if (name !== undefined) updates.name = name.trim();
             if (req.file) updates.photo = `/uploads/categories/${req.file.filename}`;
 
-            const ok = await Category.update(Number(req.params.id), updates);
-            if (!ok)  res.status(404).json({ message: "Not found" });
-            const updatedCategory = await Category.getById(Number(req.params.id));
+            if (!Object.keys(updates).length) {
+                res.status(400).json({message: 'Нет данных для обновления'});
+                return;
+            }
+
+            if (updates.photo) {
+                const current = await Category.getById(id);
+                if (current?.photo) {
+                    const oldPath = path.join(process.cwd(), 'public', current.photo);
+                }
+            }
+
+            const ok = await Category.update(id, updates);
+            if (!ok) res.status(404).json({message: 'Категория не найдена'});
+
+            const updatedCategory = await Category.getById(id);
             res.json(updatedCategory);
             return;
         } catch (e) {
             next(e);
         }
-    }
+    },
 );
-
-categoryRouter.delete("/:id",auth, permit("ADMIN"), async (req, res, next) => {
+categoryRouter.delete("/:id", auth, permit("ADMIN"), async (req, res, next) => {
     try {
         const ok = await Category.remove(Number(req.params.id));
-        if (!ok)  res.status(404).json({ message: "Not found" });
+        if (!ok) res.status(404).json({message: "Not found"});
         res.status(204).end();
         return;
     } catch (e) {

@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import {userThunk} from "@/stores/users/usersThunk";
+import {usersStore} from "@/stores/users/usersStore";
 
 
 export default function Header() {
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const { user, logout } = userThunk();
+    const { user, logout } = usersStore();
     const router = useRouter();
 
     const mockCart = [

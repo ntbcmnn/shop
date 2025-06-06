@@ -20,7 +20,7 @@ app.use(express.static("public"));
 
 app.use('/user', userRouter);
 app.use('/products', productsRouter);
-app.use('/category', categoryRouter);
+app.use('/categories', categoryRouter);
 app.use('/subcategories', subcategoriesRouter);
 
 const run = async () => {
