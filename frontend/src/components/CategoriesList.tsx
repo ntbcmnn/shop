@@ -96,13 +96,13 @@ export default function CategoriesList() {
             <div className="mb-6 flex justify-end">
                 <button
                     onClick={() => setCreating(true)}
-                    className="inline-flex gap-2 rounded bg-black px-4 py-2 text-sm text-white hover:bg-white hover:text-black border-1"
+                    className="inline-flex gap-2 rounded bg-black px-4 py-2 text-sm text-white hover:bg-white hover:text-black border"
                 >
-                    <Plus className="h-5 w-5"/> Создать категорию
+                    <Plus className="h-5 w-5" /> Создать категорию
                 </button>
             </div>
-            <div className="overflow-x-auto rounded border border-gray-200">
-                <table className="min-w-[1100px] divide-y divide-gray-200">
+            <div className="overflow-x-auto rounded-lg border border-gray-300 shadow-sm">
+                <table className="min-w-[1100px] divide-y divide-gray-200 ">
                     <thead className="bg-gray-100">
                     <tr>
                         <th className="rounded-tl-lg px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
@@ -120,8 +120,7 @@ export default function CategoriesList() {
                     </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-gray-200 bg-white">
-
+                    <tbody className="divide-y divide-gray-200  border border-gray-200 rounded-b-lg">
                     {items.map((cat, index) => (
                         <tr key={cat.id}>
                             <td className="px-4 py-2 text-sm text-gray-900">{index + 1}</td>
