@@ -20,21 +20,22 @@ subcategoriesRouter.get("/:id", async (req, res) => {
 });
 
 subcategoriesRouter.post("/", auth, permit("ADMIN"), async (req, res) => {
-    const newId = await SubcategoryModel.create(req.body);
-    const name = req.body.name;
-    res.status(201).send({id: newId, name});
+    try {
+        const newSubcategory = await SubcategoryModel.create(req.body);
+        res.status(201).send(newSubcategory);
+    } catch (err) {
+        res.status(400).send({ error: (err as Error).message });
+    }
 });
 
 subcategoriesRouter.put("/:id", auth, permit("ADMIN"), async (req, res) => {
     const updated = await SubcategoryModel.update(Number(req.params.id), req.body);
-    const name = req.body.name;
-    const id = req.params.id;
-
     if (!updated) {
         res.status(404).send({error: "Subcategory not found or no changes"});
         return;
     }
-    res.status(201).send({id, name});
+    const subcategory = await SubcategoryModel.getById(Number(req.params.id));
+    res.status(200).send(subcategory);
 });
 
 subcategoriesRouter.delete("/:id", auth, permit("ADMIN"), async (req, res) => {

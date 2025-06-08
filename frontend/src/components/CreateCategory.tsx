@@ -62,7 +62,7 @@ export default function CreateCategory({onClose, onCreated}: Props) {
         <div className="flex min-h-screen items-center justify-center px-4">
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg"
+                className="w-full max-w-x rounded-xl bg-white p-8 shadow-lg"
             >
                 <h1 className="mb-6 text-center text-2xl font-semibold text-black">
                     Новая категория

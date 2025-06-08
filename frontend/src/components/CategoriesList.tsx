@@ -145,13 +145,13 @@ export default function CategoriesList() {
                                     onClick={() => openEdit(cat)}
                                     className="text-sm  hover:underline"
                                 >
-                                    <PencilLine className="h-8 w-8"/>
+                                    <PencilLine className="h-6 w-6"/>
                                 </button>
                                 <button
                                     onClick={() => handleDelete(cat.id)}
                                     className="text-sm  hover:underline"
                                 >
-                                    <Trash className="h-8 w-8"/>
+                                    <Trash className="h-6 w-6"/>
                                 </button>
                             </td>
                         </tr>
@@ -169,7 +169,7 @@ export default function CategoriesList() {
                     <form
                         onSubmit={handleSave}
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg"
+                        className="w-full max-w-xl rounded-xl bg-white p-8 shadow-lg"
                     >
                         <h1 className="mb-6 text-center text-2xl font-semibold text-black">
                             Редактировать категорию
@@ -220,7 +220,9 @@ export default function CategoriesList() {
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
                     onClick={() => setCreating(false)}
+
                 >
+                    <div onClick={(e) => e.stopPropagation()} className="w-full max-w-xl">
                     <CreateCategory
                         onClose={() => setCreating(false)}
                         onCreated={(newCategory) => {
@@ -229,6 +231,7 @@ export default function CategoriesList() {
                             toast.success('Категория создана');
                         }}
                     />
+                    </div>
                 </div>
             )}
 

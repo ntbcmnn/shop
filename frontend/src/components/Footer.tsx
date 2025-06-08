@@ -4,7 +4,7 @@ import { FaInstagram, FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
 export default function Footer() {
     return (
         <footer className="bg-black text-white py-10 mt-16">
-            <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="container mx-auto px-4 py-4  grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Логотип и бренд */}
                 <div>
                     <Link href="/" className="text-2xl font-bold hover:underline">

@@ -29,6 +29,14 @@ export async function getAll(): Promise<Category[]> {
     return rows;
 }
 
+export async function getLimited(limit: number = 5): Promise<Category[]> {
+    const [rows] = await pool.query<(RowDataPacket & Category)[]>(
+        "SELECT * FROM categories ORDER BY id DESC LIMIT ?",
+        [limit]
+    );
+    return rows;
+}
+
 export async function getById(id: number): Promise<Category | null> {
     const [rows] = await pool.query<(RowDataPacket & Category)[]>(
         "SELECT * FROM categories WHERE id = ?",

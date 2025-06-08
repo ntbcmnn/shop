@@ -2,8 +2,6 @@ import {Router} from "express";
 import * as Category from "../models/Category";
 import permit from "../middleware/permit";
 import auth from "../middleware/auth";
-import path from 'path';
-import fs from 'node:fs';
 
 
 const categoryRouter = Router();
@@ -12,10 +10,22 @@ categoryRouter.get("/", async (_req, res, next) => {
     try {
         const categories = await Category.getAll();
         res.json(categories);
+        return;
     } catch (e) {
         next(e);
     }
 });
+
+categoryRouter.get("/limited", async (req, res, next) => {
+    try {
+        const limit = Number(req.query.limit) || 5;
+        const categories = await Category.getLimited(limit);
+        res.json(categories);
+        return;
+    } catch (e) {
+        next(e);
+    }
+})
 
 categoryRouter.get("/:id", async (req, res, next) => {
     try {
@@ -65,13 +75,6 @@ categoryRouter.put(
             if (!Object.keys(updates).length) {
                 res.status(400).json({message: 'Нет данных для обновления'});
                 return;
-            }
-
-            if (updates.photo) {
-                const current = await Category.getById(id);
-                if (current?.photo) {
-                    const oldPath = path.join(process.cwd(), 'public', current.photo);
-                }
             }
 
             const ok = await Category.update(id, updates);

@@ -39,7 +39,7 @@ export default function Register() {
             if (role === 'USER') {
                 router.push('/');
             } else {
-                router.push('/admin');
+                router.push('/admin/orders');
             }
 
         } catch {

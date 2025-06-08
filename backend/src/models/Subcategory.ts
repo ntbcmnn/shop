@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import type {RowDataPacket} from "mysql2";
+import type { RowDataPacket } from "mysql2";
 
 export const pool = mysql.createPool({
     host: "localhost",
@@ -12,37 +12,87 @@ export const pool = mysql.createPool({
     queueLimit: 0,
 });
 
-export interface Subcategory {
+export interface Category {
     id: number;
-    category_id: number;
     name: string;
+    photo: string;
 }
 
-export interface NewSubcategoryInput extends Omit<Subcategory, "id"> {
+export interface Subcategory {
+    id: number;
+    name: string;
+    category: Category;
+}
+
+export interface NewSubcategoryInput {
+    name: string;
+    category_id: number;
 }
 
 export async function getAll(): Promise<Subcategory[]> {
-    const [rows] = await pool.query<(RowDataPacket & Subcategory)[]>(
-        "SELECT * FROM subcategories ORDER BY id DESC"
+    const [rows] = await pool.query<RowDataPacket[] & Subcategory[]>(
+        `SELECT
+             s.id as id,
+             s.name as name,
+             c.id as category_id,
+             c.name as category_name,
+             c.photo as category_photo
+         FROM subcategories s
+                  JOIN categories c ON s.category_id = c.id
+         ORDER BY s.id DESC`
     );
-    return rows;
+
+    return rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        category: {
+            id: row.category_id,
+            name: row.category_name,
+            photo: row.category_photo,
+        }
+    }));
 }
 
 export async function getById(id: number): Promise<Subcategory | null> {
-    const [rows] = await pool.query<(RowDataPacket & Subcategory)[]>(
-        "SELECT * FROM subcategories WHERE id = ?",
+    const [rows] = await pool.query<RowDataPacket[] & Subcategory[]>(
+        `SELECT
+             s.id as id,
+             s.name as name,
+             c.id as category_id,
+             c.name as category_name,
+             c.photo as category_photo
+         FROM subcategories s
+                  JOIN categories c ON s.category_id = c.id
+         WHERE s.id = ?`,
         [id]
     );
-    return rows[0] ?? null;
+
+    if (rows.length === 0) return null;
+
+    const row = rows[0];
+    return {
+        id: row.id,
+        name: row.name,
+        category: {
+            id: row.category_id,
+            name: row.category_name,
+            photo: row.category_photo,
+        }
+    };
 }
 
-export async function create(data: NewSubcategoryInput): Promise<number> {
+export async function create(data: NewSubcategoryInput): Promise<Subcategory> {
     const [result] = await pool.execute<mysql.ResultSetHeader>(
         `INSERT INTO subcategories (name, category_id)
          VALUES (?, ?)`,
         [data.name, data.category_id]
     );
-    return result.insertId;
+
+    const insertId = result.insertId;
+
+    const newSubcategory = await getById(insertId);
+    if (!newSubcategory) throw new Error("Ошибка при создании подкатегории");
+    return newSubcategory;
 }
 
 export async function update(id: number, data: Partial<NewSubcategoryInput>): Promise<boolean> {

@@ -16,6 +16,11 @@ export async function fetchCategories(): Promise<Category[]> {
     return res.data;
 }
 
+export async function fetchLimitedCategories(limit: number = 5): Promise<Category[]> {
+    const res = await axiosApi.get<Category[]>(`/categories/limited?limit=${limit}`);
+    return res.data;
+}
+
 export async function fetchCategory(id: number): Promise<Category> {
     const res = await axiosApi.get<Category>(`/categories/${id}`);
     return res.data;

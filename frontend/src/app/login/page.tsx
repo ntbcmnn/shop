@@ -31,7 +31,7 @@ export default function Login() {
             if (role === 'USER') {
                 router.push('/');
             } else {
-                router.push('/admin');
+                router.push('/admin/orders');
             }
         } catch {
             setSubmitted(false);

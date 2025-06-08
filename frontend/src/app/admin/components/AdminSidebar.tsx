@@ -10,7 +10,7 @@ export default function AdminSidebar  () {
                 <ul>
                     <li>
                         <Link className="block px-4 py-2 text-sm hover:bg-gray-700" href="/admin/products">
-                            Продукты
+                            Товары
                         </Link>
                     </li>
                     <li>
@@ -19,8 +19,13 @@ export default function AdminSidebar  () {
                         </Link>
                     </li>
                     <li>
-                        <Link className="block px-4 py-2 text-sm hover:bg-gray-700" href="/admin/create-category">
-                            Создание категорий
+                        <Link className="block px-4 py-2 text-sm hover:bg-gray-700" href="/admin/subcategories">
+                           Подкатегории
+                        </Link>
+                    </li>
+                    <li>
+                        <Link className="block px-4 py-2 text-sm hover:bg-gray-700" href="/admin/orders">
+                            Заказы
                         </Link>
                     </li>
                 </ul>

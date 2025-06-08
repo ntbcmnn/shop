@@ -7,6 +7,8 @@ import productRouter from './routes/products';
 import categoryRouter from "./routes/categories";
 import subcategoriesRouter from './routes/subcategories';
 import productsRouter from './routes/products';
+import {cartRouter} from "./routes/carts";
+import orderRouter from "./routes/orders";
 
 const app = express();
 dotenv.config();
@@ -22,6 +24,8 @@ app.use('/user', userRouter);
 app.use('/products', productsRouter);
 app.use('/categories', categoryRouter);
 app.use('/subcategories', subcategoriesRouter);
+app.use('/carts', cartRouter);
+app.use('/orders', orderRouter)
 
 const run = async () => {
     try {
